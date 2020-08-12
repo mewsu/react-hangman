@@ -1,0 +1,63 @@
+* {
+  box-sizing: border-box;
+  color: #333;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#app-container {
+  display: flex;
+  /* justify-content: center; */
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 200px;
+}
+
+#guess-container {
+  display: flex;
+  width: 750px;
+  justify-content: center;
+}
+
+.guess-box {
+  margin: 5px;
+  width: 50px;
+  font-size: 50px;
+  text-align: center;
+  text-transform: uppercase;
+  border: none;
+  border-bottom: 1px solid black;
+}
+
+.guess-box:disabled {
+  background-color: white;
+}
+
+#letters-container {
+  margin-top: 50px;
+  padding: 50px 150px 50px 150px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.letter-box {
+  width: 60px;
+  margin: 9px;
+  font-size: 50px;
+  text-transform: uppercase;
+  border: 1.5px solid black;
+  padding: 5px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.letter-box-used {
+  border-color: red;
+  color: red;
+  cursor: default;
+}
