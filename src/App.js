@@ -8,7 +8,10 @@ class App extends React.Component {
       answer: "hangman",
       chancesLeft: 5,
       alphaMap: {},
-      answerMap: []
+      answerMap: [],
+      correct: 0,
+      gameOver: false,
+      won: false
     };
   }
 
@@ -35,13 +38,23 @@ class App extends React.Component {
   onClickLetter = l => {
     console.log("clicked ", l);
     const alphaMap = { ...this.state.alphaMap };
-    alphaMap[l].isUsed = true;
-    if (alphaMap[l].isInAnswer) {
+    const alphaObj = alphaMap[l];
+    if (alphaObj.isUsed) return;
+    alphaObj.isUsed = true;
+    if (alphaObj.isInAnswer) {
+      let correct = this.state.correct;
       const answerMap = [...this.state.answerMap];
       answerMap.forEach(a => {
-        if (a.letter == l) a.isRevealed = true;
+        if (a.letter == l) {
+          a.isRevealed = true;
+          correct++;
+        }
       });
-      this.setState({ answerMap });
+      console.log({ correct, answerLen: this.state.answer.length });
+      if (correct == this.state.answer.length) {
+        this.setState({ gameOver: true, won: true });
+      }
+      this.setState({ answerMap, correct });
     }
     this.setState({ alphaMap });
   };
@@ -55,6 +68,7 @@ class App extends React.Component {
     console.log(answerObjArray);
     return (
       <div id="app-container">
+        <GameMessage won={this.state.won} />
         <div id="guess-container">
           {answerObjArray.map((lo, i) => {
             return (
@@ -93,8 +107,22 @@ const GuessBox = props => {
 const LetterBox = props => {
   const css = `letter-box ${props.isUsed ? "letter-box-used" : ""}`;
   return (
-    <div className={css} onClick={() => props.onClickLetter(props.letter)}>
+    <div
+      className={css}
+      onClick={() => {
+        if (!props.isUsed) props.onClickLetter(props.letter);
+      }}
+    >
       {props.letter}
+    </div>
+  );
+};
+
+const GameMessage = props => {
+  const message = props.won ? "You Win!" : "";
+  return (
+    <div className={props.won ? "message-green" : ""} id="message-container">
+      {message}
     </div>
   );
 };
