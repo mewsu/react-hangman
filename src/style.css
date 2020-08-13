@@ -38,8 +38,7 @@ body {
 }
 
 #letters-container {
-  margin-top: 50px;
-  padding: 50px 150px 50px 150px;
+  padding: 0px 150px 50px 150px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -75,4 +74,29 @@ body {
 
 .message-red {
   color: red;
+}
+
+.hide {
+  visibility: hidden;
+}
+
+button {
+  background-color: lightseagreen;
+  border: 3px solid black;
+  border-radius: 10px;
+  text-transform: uppercase;
+  font-size: 23px;
+  height: 60px;
+  width: 300px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  width: 100%;
+  margin: 25px;
 }

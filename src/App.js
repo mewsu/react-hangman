@@ -11,32 +11,18 @@ class App extends React.Component {
       answerMap: [],
       correct: 0,
       gameOver: false,
-      won: false
+      won: false,
+      answerChoices: []
     };
   }
 
   componentDidMount = () => {
-    const alphaMap = {};
-    const answerMap = [];
-    const answer = "hangman";
-    [..."abcdefghijklmnopqrstuvwxyz"].forEach(l => {
-      alphaMap[l] = {
-        letter: l,
-        isInAnswer: answer.includes(l),
-        isUsed: false
-      };
-    });
-    [...answer].forEach(l => {
-      answerMap.push({
-        letter: l,
-        isRevealed: false
-      });
-    });
-    this.setState({ answer, alphaMap, answerMap });
+    this.initialize();
   };
 
   onClickLetter = l => {
-    console.log("clicked ", l);
+    if (this.state.gameOver) return;
+    // console.log("clicked ", l);
     const alphaMap = { ...this.state.alphaMap };
     const alphaObj = alphaMap[l];
     if (alphaObj.isUsed) return;
@@ -50,25 +36,76 @@ class App extends React.Component {
           correct++;
         }
       });
-      console.log({ correct, answerLen: this.state.answer.length });
+      // console.log({ correct, answerLen: this.state.answer.length });
       if (correct == this.state.answer.length) {
         this.setState({ gameOver: true, won: true });
       }
       this.setState({ answerMap, correct });
+    } else {
+      let chancesLeft = this.state.chancesLeft;
+      chancesLeft--;
+      if (chancesLeft <= 0) {
+        // console.log("game over");
+        this.setState({ gameOver: true, won: false });
+      }
+      this.setState({ chancesLeft });
     }
     this.setState({ alphaMap });
   };
 
+  onClickPlayAgain = () => {
+    // console.log("play again");
+    this.setState({
+      chancesLeft: 5,
+      correct: 0,
+      gameOver: false,
+      won: false
+    });
+    this.initialize();
+  };
+
+  initialize = () => {
+    const alphaMap = {};
+    const answerMap = [];
+    const answerChoices = [
+      "hangman",
+      "react",
+      "extravagant",
+      "icecream",
+      "zebra"
+    ];
+    const randomInt = getRandomIntInclusive(0, answerChoices.length - 1);
+    const answer = answerChoices[randomInt];
+    [..."abcdefghijklmnopqrstuvwxyz"].forEach(l => {
+      alphaMap[l] = {
+        letter: l,
+        isInAnswer: answer.includes(l),
+        isUsed: false
+      };
+    });
+    [...answer].forEach(l => {
+      answerMap.push({
+        letter: l,
+        isRevealed: false
+      });
+    });
+    this.setState({ answer, alphaMap, answerMap, answerChoices });
+  };
+
   render() {
-    console.log("i render");
+    // console.log("i render");
     // const answer = [...this.state.answer];
     const alphaObjArray = Object.values(this.state.alphaMap);
     const answerObjArray = [...this.state.answerMap];
     // console.log(letterObjArray);
-    console.log(answerObjArray);
+    // console.log(answerObjArray);
     return (
       <div id="app-container">
-        <GameMessage won={this.state.won} />
+        <GameMessage
+          won={this.state.won}
+          gameOver={this.state.gameOver}
+          chancesLeft={this.state.chancesLeft}
+        />
         <div id="guess-container">
           {answerObjArray.map((lo, i) => {
             return (
@@ -76,6 +113,10 @@ class App extends React.Component {
             );
           })}
         </div>
+        <PlayAgain
+          gameOver={this.state.gameOver}
+          onClickPlayAgain={this.onClickPlayAgain}
+        />
         <div id="letters-container">
           {alphaObjArray.map((lo, i) => {
             return (
@@ -99,7 +140,7 @@ const GuessBox = props => {
       className="guess-box"
       maxLength={"1"}
       value={props.isRevealed ? props.letter : ""}
-      disabled={true}
+      disabled
     />
   );
 };
@@ -119,12 +160,47 @@ const LetterBox = props => {
 };
 
 const GameMessage = props => {
-  const message = props.won ? "You Win!" : "";
+  let message = "";
+  let css = "";
+  if (props.gameOver && !props.won) {
+    message = "Game Over!";
+    css = "message-red";
+  } else if (props.won) {
+    message = "You Win!";
+    css = "message-green";
+  }
+
   return (
-    <div className={props.won ? "message-green" : ""} id="message-container">
-      {message}
+    <div>
+      <div className={css} id="message-container">
+        {message}
+      </div>
+      <div className={props.gameOver ? "hide" : ""}>
+        Chances Left: <span className="message-green">{props.chancesLeft}</span>
+      </div>
     </div>
   );
 };
+
+const PlayAgain = props => {
+  return (
+    <div id="button-container">
+      <button
+        className={!props.gameOver ? "hide" : ""}
+        onClick={() => {
+          props.onClickPlayAgain();
+        }}
+      >
+        Play Again
+      </button>
+    </div>
+  );
+};
+
+function getRandomIntInclusive(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive
+}
 
 ReactDOM.render(<App />, document.getElementById("root"));
