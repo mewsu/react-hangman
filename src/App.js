@@ -20,6 +20,34 @@ class App extends React.Component {
     this.initialize();
   };
 
+  initialize = () => {
+    const alphaMap = {};
+    const answerMap = [];
+    const answerChoices = [
+      "hangman",
+      "react",
+      "extravagant",
+      "icecream",
+      "zebra"
+    ];
+    const randomInt = getRandomIntInclusive(0, answerChoices.length - 1);
+    const answer = answerChoices[randomInt];
+    [..."abcdefghijklmnopqrstuvwxyz"].forEach(l => {
+      alphaMap[l] = {
+        letter: l,
+        isInAnswer: answer.includes(l),
+        isUsed: false
+      };
+    });
+    [...answer].forEach(l => {
+      answerMap.push({
+        letter: l,
+        isRevealed: false
+      });
+    });
+    this.setState({ answer, alphaMap, answerMap, answerChoices });
+  };
+
   onClickLetter = l => {
     if (this.state.gameOver) return;
     // console.log("clicked ", l);
@@ -64,34 +92,6 @@ class App extends React.Component {
     this.initialize();
   };
 
-  initialize = () => {
-    const alphaMap = {};
-    const answerMap = [];
-    const answerChoices = [
-      "hangman",
-      "react",
-      "extravagant",
-      "icecream",
-      "zebra"
-    ];
-    const randomInt = getRandomIntInclusive(0, answerChoices.length - 1);
-    const answer = answerChoices[randomInt];
-    [..."abcdefghijklmnopqrstuvwxyz"].forEach(l => {
-      alphaMap[l] = {
-        letter: l,
-        isInAnswer: answer.includes(l),
-        isUsed: false
-      };
-    });
-    [...answer].forEach(l => {
-      answerMap.push({
-        letter: l,
-        isRevealed: false
-      });
-    });
-    this.setState({ answer, alphaMap, answerMap, answerChoices });
-  };
-
   render() {
     // console.log("i render");
     // const answer = [...this.state.answer];
@@ -134,6 +134,7 @@ class App extends React.Component {
   }
 }
 
+// -- Components -- //
 const GuessBox = props => {
   return (
     <input
@@ -197,6 +198,7 @@ const PlayAgain = props => {
   );
 };
 
+// -- Helpers -- //
 function getRandomIntInclusive(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
